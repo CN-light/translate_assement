@@ -1,0 +1,100 @@
+.el-header,.el-footer {
+    padding: 0;
+    width: 100%;
+}
+
+.el-header{
+    line-height: 40px;
+    font-size: 15px !important;
+    height: 40px !important;  
+}
+
+.el-footer{
+    line-height: 30px;
+    font-size: 12px !important;
+    height: 30px !important;
+}
+
+.el-main {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.all{
+    height: 100% !important;
+    border: 0px;
+    width: 100% !important;
+}
+
+.select-div{
+    width: 50%;
+    padding: 0 25%;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    /* justify-content: stretch; */
+}
+
+.textarea-div{
+    width: 50%;
+    padding: 10px 25%;
+}
+
+.options-div,.grade-div{
+    width: 50%;
+    
+    height: 40px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.grade-div{
+    padding: 0px 25% 30px 25%;
+}
+
+.options-div{
+    padding: 0px 25%;
+}
+
+.inline-grade-div{
+    width: 180px;
+}
+
+.inline-options-div{
+    width: 180px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.select{
+    width: 30%;
+    height: 40px;
+}
+
+.input,.output{
+    width: 100%;
+    padding: 15px 0;
+}
+
+.output .el-textarea__inner{
+    background-color: #f2f2f2;
+    border: 0;
+}
+
+.button{
+    width: 100px;
+}
+
+.el-form-item{
+    margin: 0px;
+}
+
+.validate{
+    color: red;
+    display: flex;
+    justify-content: flex-start;
+    line-height: 30px;
+    height: 30px;
+}
+
+

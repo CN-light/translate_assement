@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.assessment.translate.mapper.TranslationMapper">
+    <resultMap id="translationMap" type="com.assessment.translate.entity.Translation">
+        <id column="id" property="id"/>
+        <result column="ip" property="ip"/>
+        <result column="grade" property="grade"/>
+        <result column="date" property="date"/>
+        <association column="engine" property="engine" javaType="com.assessment.translate.entity.Dictionary">
+            <id column="engine_id" property="id"/>
+            <result column="engine_name" property="name"/>
+            <result column="engine_code" property="code"/>
+            <result column="engine_alias" property="alias"/>
+        </association>
+        <association column="source" property="source" javaType="com.assessment.translate.entity.Text">
+            <id column="source_id" property="id"/>
+            <result column="source_text" property="text"/>
+            <association column="type" property="type" javaType="com.assessment.translate.entity.Dictionary">
+                <id column="source_type_id" property="id"/>
+                <result column="source_type_name" property="name"/>
+                <result column="source_type_code" property="code"/>
+                <result column="source_type_alias" property="alias"/>
+            </association>
+        </association>
+        <association column="target" property="target" javaType="com.assessment.translate.entity.Text">
+            <id column="target_id" property="id"/>
+            <result column="target_text" property="text"/>
+            <association column="type" property="type" javaType="com.assessment.translate.entity.Dictionary">
+                <id column="target_type_id" property="id"/>
+                <result column="target_type_name" property="name"/>
+                <result column="target_type_code" property="code"/>
+                <result column="target_type_alias" property="alias"/>
+            </association>
+        </association>
+    </resultMap>
+    <select id="findAllByIp" resultMap="translationMap">
+        SELECT  t.id, t.ip, t.grade, t.date,
+        d1.id engine_id, d1.name engine_name, d1.code engine_code, d1.alias engine_alias,
+		t2.id source_id, t2.text source_text, t2.type source_type_id, t2.name source_type_name, t2.code source_type_code, t2.alias source_type_alias,
+		t3.id target_id, t3.text target_text, t3.type target_type_id, t3.name target_type_name, t3.code target_type_code, t3.alias target_type_alias
+        FROM translation t left join dictionary d1 on t.engine = d1.id
+        left join (select e1.id, e1.text, e1.type, d2.name, d2.code, d2.alias from text e1 left join dictionary d2 on e1.type = d2.id) t2 on t.source = t2.id
+        left join (select e2.id, e2.text, e2.type, d3.name, d3.code, d3.alias from text e2 left join dictionary d3 on e2.type = d3.id) t3 on t.target = t3.id
+        WHERE t.ip = #{ip} and t.date = #{date}
+    </select>
+
+    <insert id="addTranslation" parameterType="Translation">
+        insert into translation (id, ip, engine, source, target, grade, date)
+        values (#{id}, #{ip}, #{engine.id}, #{source.id}, #{target.id}, #{grade}, #{date})
+    </insert>
+</mapper>

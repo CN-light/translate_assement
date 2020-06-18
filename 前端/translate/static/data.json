@@ -1,0 +1,60 @@
+{
+    "zh": {
+        "title": "翻译评估工具",
+        "year": "2020",
+        "writer": "韩光",
+        "placeholder": {
+            "text": "请输入你要翻译的文字",
+            "grade": "请输入翻译效果得分"
+        },
+        "button": {
+            "export": "导出",
+            "submit": "提交"
+        },
+        "notify": {
+            "title": {
+                "success": "成功",
+                "fail": "失败"
+            },
+            "message": ["提交成功", "提交失败", "预期之外的错误：", "服务器异常："]
+        },
+        "options": {
+            "engineOptions": [
+                {
+                    "value": "baidu",
+                    "label": "百度翻译"
+                },
+                {
+                    "value": "tencent",
+                    "label": "腾讯翻译君"
+                },
+                {
+                    "value": "youdao",
+                    "label": "有道翻译"
+                },
+                {
+                    "value": "alibaba",
+                    "label": "阿里翻译"
+                }
+            ],
+            "languageOptions": [
+                {
+                    "value": "chinese",
+                    "label": "中文"
+                },
+                {
+                    "value": "english",
+                    "label": "英文"
+                }
+            ],
+            "validateOptions": [
+                "*翻译效果得分不能为空",
+                "*翻译效果得分必须为数字",
+                "*翻译效果得分不能小于0",
+                "*翻译效果得分不能大于100",
+                "*原文不能为空",
+                "*译文不能为空"
+            ]
+        }
+    }
+}

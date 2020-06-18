@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.assessment.translate.mapper.DictionaryMapper">
+    <select id="findAllEngine" resultType="Dictionary">
+        SELECT  id, name, code, alias FROM dictionary WHERE code = "翻译引擎"
+    </select>
+
+    <select id="findEngineByName" resultType="Dictionary">
+        SELECT id, name, code, alias FROM dictionary WHERE code = "翻译引擎" and name = #{name}
+    </select>
+
+    <select id="findAllLanguage" resultType="Dictionary">
+        SELECT  id, name, code, alias FROM dictionary WHERE code = "语言"
+    </select>
+
+    <select id="findLanguageByName" resultType="Dictionary">
+        SELECT  id, name, code, alias FROM dictionary WHERE code = "语言" and name = #{name}
+    </select>
+</mapper>
