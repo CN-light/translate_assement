@@ -45,7 +45,13 @@ public class TranslationServiceImpl implements TranslationService {
 
     @PostConstruct
     private void init() {
-        translateThreadPool = new TranslateThreadPool(Integer.parseInt(max));
+        /*每秒的任务数*/
+        final int tasks = Integer.parseInt(max);
+
+        int corePoolSize = ((int) (tasks * 0.75) <= 0 ? 1 : (int) (tasks * 0.75));
+        int queueCapacity = ((int) (tasks * 0.05) <= 0 ? 1 : (int) (tasks * 0.05));
+        int maxPoolSize = (Math.max((int) (tasks * 1.5), corePoolSize));
+        translateThreadPool = new TranslateThreadPool(corePoolSize, maxPoolSize, queueCapacity);
     }
 
     @Override
@@ -59,7 +65,7 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public String translate(Map<String, String> map) {
+    public Object translate(Map<String, String> map) {
         TranslateEngine engine = TranslateEngineFactory.getTranslateEngine(map.get("engine"));
         if (engine != null) {
             if (engine.build(translateThreadPool, map.get("source"), map.get("target"), map.get("text"))) {
@@ -69,19 +75,19 @@ public class TranslationServiceImpl implements TranslationService {
                 JSONObject error = new JSONObject();
                 error.put("translation", "");
                 error.put("error", "failed to build engine");
-                return error.toString();
+                return error;
             }
         } else {
             log.error("engine is not existed");
             JSONObject error = new JSONObject();
             error.put("translation", "");
             error.put("error", "no such translate engine");
-            return error.toString();
+            return error;
         }
     }
 
     @Override
-    public String exportAsExcel(Map<String, String> map) {
+    public JSONArray exportAsExcel(Map<String, String> map) {
         JSONArray result = new JSONArray();
         List<Translation> translations = findAllByIp(map.get("ip"));
         if (translations != null) {
@@ -96,13 +102,12 @@ public class TranslationServiceImpl implements TranslationService {
                 result.add(object);
             }
         }
-        return JSONArray.toJSONString(result);
+        return result;
     }
 
     @Transactional
     @Override
     public boolean submit(Map<String, String> map) {
-        System.out.println(map.get("ip"));
         Translation translation = new Translation();
         translation.setId(ParameterUtils.getUUID());
         translation.setIp(map.get("ip"));

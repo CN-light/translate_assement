@@ -75,7 +75,7 @@ public class BaiduTranslateEngine extends TranslateEngine {
     }
 
     @Override
-    public String translateByPost() {
+    public Object translateByPost() {
         HttpPost post = ParameterUtils.buildPost(url, getParameters());
         if (post != null) {
             post.setHeader("content-type", "application/x-www-form-urlencoded");
@@ -86,12 +86,12 @@ public class BaiduTranslateEngine extends TranslateEngine {
             JSONObject result = new JSONObject();
             result.put("translation", "");
             result.put("error", "uri syntax or unsupported encoding");
-            return result.toString();
+            return result;
         }
     }
 
     @Override
-    public String translateByGet() {
+    public Object translateByGet() {
         HttpGet get = ParameterUtils.buildGet(url, getParameters());
         if (get != null) {
             log.info(get.toString());
@@ -101,27 +101,26 @@ public class BaiduTranslateEngine extends TranslateEngine {
             JSONObject result = new JSONObject();
             result.put("translation", "");
             result.put("error", "uri syntax");
-            return result.toString();
+            return result;
         }
     }
 
-    private <T extends HttpRequestBase> String translate(T method) {
+    private <T extends HttpRequestBase> Object translate(T method) {
         JSONObject result = new JSONObject();
         //加入线程池执行
-        String body = getTranslateThreadPool().translate(method);
+        JSONObject body = getTranslateThreadPool().translate(method);
         if (body == null) {
             result.put("translation", "");
             result.put("error", "unexpected error");
         } else {
             log.info(body);
-            JSONObject o = JSONObject.parseObject(body);
-            if (o.get("error_code") != null) {
+            if (body.get("error_code") != null) {
                 result.put("translation", "");
-                result.put("error", o.getString("error_msg"));
+                result.put("error", body.getString("error_msg"));
             } else {
-                result.put("translation", EncryptionUtils.utf8Decode(o.getJSONArray("trans_result").getJSONObject(0).getString("dst")));
+                result.put("translation", EncryptionUtils.utf8Decode(body.getJSONArray("trans_result").getJSONObject(0).getString("dst")));
             }
         }
-        return result.toString();
+        return result;
     }
 }

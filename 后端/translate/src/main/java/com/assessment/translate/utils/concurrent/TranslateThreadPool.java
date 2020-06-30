@@ -1,5 +1,6 @@
 package com.assessment.translate.utils.concurrent;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -18,14 +19,9 @@ public class TranslateThreadPool extends ThreadPoolExecutor {
     private final CloseableHttpClient httpClient;
     private final Logger log = Logger.getLogger(TranslateThreadPool.class);
 
-    public TranslateThreadPool(int max) {
-        super((int) (max * 0.75), 3 * max, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        setRejectedExecutionHandler(new RejectedExecutionHandler() {
-            @Override
-            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                log.info(r.toString() + " is discarded");
-            }
-        });
+    public TranslateThreadPool(int corePoolSize, int maxPoolSize, int queueCapacity) {
+        super(corePoolSize, maxPoolSize, 0, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(queueCapacity));
+        setRejectedExecutionHandler((r, executor) -> log.info(r.toString() + " is discarded"));
         context = new BasicHttpContext();
         cm = new PoolingHttpClientConnectionManager();
         httpClient = HttpClients.custom()
@@ -39,13 +35,13 @@ public class TranslateThreadPool extends ThreadPoolExecutor {
         log.info("thread pool terminated");
     }
 
-    public <T extends HttpRequestBase> String translate(T method) {
+    public <T extends HttpRequestBase> JSONObject translate(T method) {
         try {
             return submit(() -> {
                 try (CloseableHttpResponse response = httpClient.execute(method, context)) {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
-                        return EntityUtils.toString(entity);
+                        return JSONObject.parseObject(EntityUtils.toString(entity));
                     }
                 } catch (Exception e) {
                     log.error(e.toString());
@@ -59,7 +55,7 @@ public class TranslateThreadPool extends ThreadPoolExecutor {
         return null;
     }
 
-    public String submitTask(Callable<String> callable) {
+    public JSONObject submitTask(Callable<JSONObject> callable) {
         try {
             /*最多等待5s，否则抛出超时异常*/
             return submit(callable).get(5, TimeUnit.SECONDS);

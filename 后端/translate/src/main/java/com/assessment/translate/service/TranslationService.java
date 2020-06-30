@@ -1,5 +1,7 @@
 package com.assessment.translate.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.assessment.translate.entity.Translation;
 
 import java.util.List;
@@ -27,7 +29,7 @@ public interface TranslationService {
      * @param map
      * @return
      */
-    String translate(Map<String, String> map);
+    Object translate(Map<String, String> map);
 
     /**
      * 导出数据到excel表格
@@ -35,7 +37,7 @@ public interface TranslationService {
      * @param map
      * @return
      */
-    String exportAsExcel(Map<String, String> map);
+    JSONArray exportAsExcel(Map<String, String> map);
 
     /**
      * 提交翻译质量评估分数

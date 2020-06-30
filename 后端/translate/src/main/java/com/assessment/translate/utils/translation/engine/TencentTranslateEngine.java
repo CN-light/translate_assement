@@ -87,7 +87,7 @@ public class TencentTranslateEngine extends TranslateEngine {
     }
 
     @Override
-    public String translateByPost() {
+    public Object translateByPost() {
         String signature = createSign(getParameters(), "POST");
         addParameters("Signature", signature);
         HttpPost post = ParameterUtils.buildPost(url, getParameters());
@@ -100,12 +100,12 @@ public class TencentTranslateEngine extends TranslateEngine {
             JSONObject result = new JSONObject();
             result.put("translation", "");
             result.put("error", "uri syntax or unsupported encoding");
-            return result.toString();
+            return result;
         }
     }
 
     @Override
-    public String translateByGet() {
+    public Object translateByGet() {
         String signature = createSign(getParameters(), "GET");
         addParameters("Signature", signature);
         HttpGet get = ParameterUtils.buildGet(url, getParameters());
@@ -117,20 +117,20 @@ public class TencentTranslateEngine extends TranslateEngine {
             JSONObject result = new JSONObject();
             result.put("translation", "");
             result.put("error", "uri syntax");
-            return result.toString();
+            return result;
         }
     }
 
-    private <T extends HttpRequestBase> String translate(T method) {
+    private <T extends HttpRequestBase> Object translate(T method) {
         JSONObject result = new JSONObject();
         //加入线程池执行
-        String body = getTranslateThreadPool().translate(method);
+        JSONObject body = getTranslateThreadPool().translate(method);
         if (body == null) {
             result.put("translation", "");
             result.put("error", "unexpected error");
         } else {
             log.info(body);
-            JSONObject o = JSONObject.parseObject(body).getJSONObject("Response");
+            JSONObject o = body.getJSONObject("Response");
             if (o.get("Error") != null) {
                 result.put("translation", "");
                 result.put("error", o.getJSONObject("Error").getString("Code") + ":" + o.getJSONObject("Error").getString("Message"));
@@ -138,7 +138,7 @@ public class TencentTranslateEngine extends TranslateEngine {
                 result.put("translation", EncryptionUtils.utf8Decode(o.getString("TargetText")));
             }
         }
-        return result.toString();
+        return result;
     }
 
     private String createSign(HashMap<String, String> map, String method) {

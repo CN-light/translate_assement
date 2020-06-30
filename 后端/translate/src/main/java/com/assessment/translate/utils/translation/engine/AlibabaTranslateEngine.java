@@ -72,20 +72,20 @@ public class AlibabaTranslateEngine extends TranslateEngine {
     }
 
     @Override
-    public String translateByPost() {
+    public Object translateByPost() {
         return translate(MethodType.POST);
     }
 
     @Override
-    public String translateByGet() {
+    public Object translateByGet() {
         return translate(MethodType.GET);
     }
 
-    private String translate(MethodType method) {
+    private Object translate(MethodType method) {
         JSONObject t = new JSONObject();
         t.put("translation", "");
         t.put("error", "unexpected error");
-        String r = getTranslateThreadPool().submitTask(() -> {
+        JSONObject r = getTranslateThreadPool().submitTask(() -> {
             IAcsClient client = new DefaultAcsClient(profile);
             request.setSysMethod(method);
             log.info(request.getSysBodyParameters());
@@ -103,9 +103,9 @@ public class AlibabaTranslateEngine extends TranslateEngine {
                 result.put("translation", "");
                 result.put("error", e.toString());
             }
-            return result.toString();
+            return result;
         });
-        return (r == null ? t.toString() : r);
+        return (r == null ? t : r);
     }
 
     /* 调用阿里巴巴翻译api时间戳格式一直显示不对，即使和官方文档上的格式一致,因此直接使用阿里的sdk来调用api*/

@@ -1,5 +1,6 @@
 package com.assessment.translate.utils.translation;
 
+import com.alibaba.fastjson.JSONObject;
 import com.assessment.translate.utils.concurrent.TranslateThreadPool;
 import org.apache.log4j.Logger;
 
@@ -23,14 +24,14 @@ public abstract class TranslateEngine {
      *
      * @return 翻译结果
      */
-    public abstract String translateByPost();
+    public abstract Object translateByPost();
 
     /**
      * 使用get请求进行翻译
      *
      * @return 翻译结果
      */
-    public abstract String translateByGet();
+    public abstract Object translateByGet();
 
     /**
      * 初始化

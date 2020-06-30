@@ -81,7 +81,7 @@ public class YoudaoTranslateEngine extends TranslateEngine {
     }
 
     @Override
-    public String translateByPost() {
+    public Object translateByPost() {
         HttpPost post = ParameterUtils.buildPost(url, getParameters());
         if (post != null) {
             log.info(post.toString());
@@ -91,12 +91,12 @@ public class YoudaoTranslateEngine extends TranslateEngine {
             JSONObject result = new JSONObject();
             result.put("translation", "");
             result.put("error", "uri syntax or unsupported encoding");
-            return result.toString();
+            return result;
         }
     }
 
     @Override
-    public String translateByGet() {
+    public Object translateByGet() {
         HttpGet get = ParameterUtils.buildGet(url, getParameters());
         if (get != null) {
             log.info(get.toString());
@@ -106,22 +106,21 @@ public class YoudaoTranslateEngine extends TranslateEngine {
             JSONObject result = new JSONObject();
             result.put("translation", "");
             result.put("error", "uri syntax");
-            return result.toString();
+            return result;
         }
     }
 
-    private <T extends HttpRequestBase> String translate(T method) {
+    private <T extends HttpRequestBase> Object translate(T method) {
         JSONObject result = new JSONObject();
         //加入线程池执行
-        String body = getTranslateThreadPool().translate(method);
+        JSONObject body = getTranslateThreadPool().translate(method);
         log.info(body);
-        JSONObject o = JSONObject.parseObject(body);
-        if (!o.get("errorCode").equals("0")) {
+        if (!body.get("errorCode").equals("0")) {
             result.put("translation", "");
-            result.put("error", "youdao error code :" + o.get("errorCode"));
+            result.put("error", "youdao error code :" + body.get("errorCode"));
         } else {
-            result.put("translation", o.getJSONArray("translation").getString(0));
+            result.put("translation", body.getJSONArray("translation").getString(0));
         }
-        return result.toString();
+        return result;
     }
 }
